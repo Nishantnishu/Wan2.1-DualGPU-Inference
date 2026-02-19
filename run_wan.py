@@ -1,14 +1,33 @@
 
+# -----------------------------------------------------------------------------
+# Wan2.1 Video Generation Pipeline
+# Copyright (c) 2026 Nishant. All Rights Reserved.
+#
+# This pipeline implements a distributed, dual-GPU inference engine for the 
+# Wan2.1 text-to-video model. It features hybrid precision (BF16/FP32), 
+# asynchronous CPU text encoding, and manual memory management for 
+# high-stability generation on consumer hardware.
+# -----------------------------------------------------------------------------
+
+import os
+import sys
+import gc
+import numpy as np
 import torch
+
 from diffusers import WanPipeline, WanTransformer3DModel, AutoencoderKLWan
 from diffusers.utils import export_to_video
 from transformers import AutoTokenizer, AutoModel
-import os
-import sys
-import numpy as np
-import gc
 
 def generate_video(prompt, output_path="output_wan.mp4", num_frames=81):
+    """
+    Executes the video generation pipeline.
+    
+    Args:
+        prompt (str): The text description for the video.
+        output_path (str): Filename for the protected video output.
+        num_frames (int): Number of frames to generate.
+    """
     # Redirect stdout/stderr to file for logging
     sys.stdout = open("output.log", "w", encoding="utf-8")
     sys.stderr = sys.stdout
